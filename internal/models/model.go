@@ -8,26 +8,26 @@ import (
 )
 
 type User struct{
-Id        string    			`gorm:"primaryKey"`
+Id         string   `gorm:"type:uuid;primaryKey"`
 Name      *sql.NullString	
 Email     string
 Password  string
 CreatedAt time.Time
 UpdatedAt time.Time
-// CreatedRooms   []Rooms      `gorm:"foreignKey:createdBy"`
-// JoinedRooms    []*Rooms      `gorm:"many2many:user_joined_room;"`
+CreatedRooms   []Rooms      `gorm:"foreignKey:createdBy"`
+JoinedRooms    []Rooms      `gorm:"many2many:user_joined_room;"`
 }
 
 type VerificationToken struct{
-Id string
-EmailIdentifier string   `gorm:"unique"`
+Id  string        `gorm:"type:uuid;primaryKey"`
+EmailIdentifier string  
 Token           string
 CreatedAt time.Time
 ExpiresAt time.Time
 }
 
 type Session struct{
-  Id              string			`gorm:"primaryKey"`
+  Id              string      `gorm:"primaryKey"`
   AccountProvider string
   SignInAt    	  time.Time
   SignedOutAt 	  time.Time
@@ -46,7 +46,7 @@ type Avatars struct{
  Name           string
  Image          string
  ExistedFrom    time.Time
-
+ MetaUserId     string
 }
 
 type Rooms struct{
@@ -63,10 +63,10 @@ MetaUsers    []MetaUsers `gorm:"foreignKey:roomId"`
 type MetaUsers struct{
  Id          string
  Name        string
- Avatar      string
- UserId		 string
- UserAvatar  Avatars `gorm:"references:Id"`
- RoomId      string
+ UserAvatar  Avatars   `gorm:"references:meta_user_id"`
+ UserId		 string   
+ RoomId      string     
+ Position    PlayerPosition `gorm:"references:meta_users_id"`
 }
 
 type PlayerPosition struct{
@@ -74,11 +74,15 @@ type PlayerPosition struct{
  X_cordinate float64
  Y_cordinate float64
  MetaUsersId string
- MetaUser    MetaUsers
 }
 
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error){
-	u.Id= uuid.New().String()
+	u.Id = uuid.New().String()
+	return 
+} 
+
+func (u *VerificationToken) BeforeCreate(tx *gorm.DB) (err error){
+	u.Id = uuid.New().String()
 	return 
 } 

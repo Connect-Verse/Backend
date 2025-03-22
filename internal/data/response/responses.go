@@ -24,6 +24,24 @@ type UserResponse struct {
 	UpdatedAt time.Time	 `json:"updatedAt"`
 }
 
-type VerificationToken struct {
-	
+type MapResponse struct{
+	Id   string  `json:"id"`
+	Image string  `json:"image"`
+ 	Tiles string `json:"tiles"`
+	Info  string    `json:"info"`
+}
+
+type RoomResponse struct{
+	Id   string  `json:"id"`
+	Name string  `json:"name"`
+	CreatedBy string `json:"createdby"`
+	MapId  string    `json:"mapId"`
+	UsersJoined string `json:"userJoined"`
+  }
+
+type AvatarResponse struct{
+	Id string  `json:"id"`
+	Name string `json:"name"`
+	Image string `json:"image"`
+	ExistedFrom time.Time `json:"existedFrom"`
 }

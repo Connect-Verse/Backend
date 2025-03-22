@@ -13,16 +13,3 @@ type UserServices interface{
 	// Delete(userId string) (user response.UserResponse , err error)
 	
 }
-
-type RoomServices interface{
-
-}
-
-type AvatarServices interface{
-
-}
-
-
-type Maps interface{
-
-}

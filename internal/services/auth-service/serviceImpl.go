@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 	"time"
-
 	"github.com/connect-verse/internal/data/request"
 	"github.com/connect-verse/internal/models"
 	"github.com/connect-verse/internal/repository/user"
@@ -89,16 +88,18 @@ func (a *AuthServiceImplementation) SignUp(user request.CreateUserRequest,token 
 
 
 
-func (a *AuthServiceImplementation) Verify(email string,token string) error {
-   result,err:= a.Verification.FindbyEmail(email)
-
+func (a *AuthServiceImplementation) Verify(email string,tokenId string) error {
+   result,err:= a.Verification.FindbyId(tokenId)
+ 
    if err!=nil{
 	  return err
    }
 
-   if token==result.Token {
-	err= a.Verification.Delete(result.Id)
+   if email==result.EmailIdentifier {
+	err= a.Verification.Delete(tokenId)
+
 	if err!=nil {
+		log.Printf(err.Error())
 		return err
 	}
 	  return nil

@@ -1,6 +1,8 @@
 package verificationtoken
 
 import (
+	"log"
+
 	"github.com/connect-verse/internal/models"
 	"gorm.io/gorm"
 )
@@ -38,7 +40,8 @@ func (u *VerifyImplementation) Create(token models.VerificationToken) (err error
 
 func (u *VerifyImplementation) FindbyId(tokenId string) ( models.VerificationToken, error){
     var token models.VerificationToken
-	result:= u.db.First(&token, tokenId)
+	result:= u.db.Where("id = ?",tokenId).First(&token)
+
 	if result.Error != nil{
 		return models.VerificationToken{}, result.Error
 	}        
@@ -61,7 +64,9 @@ func (u *VerifyImplementation) Update(upd models.VerificationToken) ( models.Ver
 
 func (u *VerifyImplementation) Delete(tokenId string) (error){
     var token models.VerificationToken
-    result:= u.db.Delete(&token,tokenId)
+    result:= u.db.Where("id = ? ",tokenId).Delete(&token)
+	log.Printf(tokenId,"hellosfsho")
+
 	if result.Error != nil{
 		return result.Error
 	}        

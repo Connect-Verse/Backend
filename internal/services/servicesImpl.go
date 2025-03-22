@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"fmt"
-
 	"github.com/connect-verse/internal/data/request"
 	"github.com/connect-verse/internal/data/response"
 	"github.com/connect-verse/internal/models"
@@ -46,8 +45,7 @@ func (u *UserSerImpl)  FindAll() (users []response.UserResponse,err error){
 	for _ , value := range result{
 	
        user:= response.UserResponse{
-	//	Name: value.Name,
-		Id: value.Id,
+		Name: *value.Name,
 		Email: value.Email,
 		CreatedAt: value.CreatedAt,
 		UpdatedAt: value.UpdatedAt,
