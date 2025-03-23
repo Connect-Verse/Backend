@@ -12,7 +12,7 @@ import (
 	"github.com/connect-verse/internal/repository/verificationToken"
 	"github.com/connect-verse/internal/services"
 	"github.com/connect-verse/internal/services/auth-service"
-	mapservice "github.com/connect-verse/internal/services/map-service"
+    "github.com/connect-verse/internal/services/map-service"
 	"github.com/connect-verse/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -72,7 +72,7 @@ func userRouter(controller *handlers.Controller) *gin.Engine {
 	authRouter.POST("/signUp",controller.Signup)
 	authRouter.POST("/verify-User",controller.Verify)
 
-	mapsRouter:= serve.Group("/rooms")
+	mapsRouter:= serve.Group("/maps")
 	mapsRouter.POST("/create-map",controller.CreateMap)
 	mapsRouter.DELETE("/delete-map",controller.DeleteMap)
 	mapsRouter.GET("/all-maps",controller.FindAllMap)
@@ -86,11 +86,13 @@ func userRouter(controller *handlers.Controller) *gin.Engine {
 	// roomsRouter.GET("/all-rooms",controller.AllRooms)
 
 
-	// avatarRouter:= serve.Group("/avatar")
-	// avatarRouter.POST("/create-avatar",controller.CreateAvatar)
-	// avatarRouter.DELETE("/delete-avatar",controller.DeleteAvatar)
-	// avatarRouter.GET("/users-avatar",controller.GetAvatar)
-	// avatarRouter.GET("/all-avatar",controller.AllAvatar)
+	avatarRouter:= serve.Group("/avatar")
+	avatarRouter.POST("/create-avatar",controller.CreateAvatar)
+	avatarRouter.DELETE("/delete-avatar",controller.DeleteAvatar)
+	avatarRouter.GET("/Update-avatar",controller.UpdateAvatar)
+	avatarRouter.GET("/all-avatar",controller.AllAvatar)
+	avatarRouter.GET("/find-avatar",controller.FindAvatar)
+
 
 
 

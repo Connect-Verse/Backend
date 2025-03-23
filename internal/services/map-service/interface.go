@@ -11,5 +11,4 @@ type MapService interface{
 	FindMap(mappId string) (response.MapResponse,error)
 	FindALlMaps() ([]response.MapResponse,error)
 	UpdateMaps(mapp request.MapRequest) (response.MapResponse,error)
-
 }
