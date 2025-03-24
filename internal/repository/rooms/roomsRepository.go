@@ -5,12 +5,12 @@ import (
 )
 
 type RoomsRepository interface{
-	CreateRoom(user models.Rooms) error
-	DeleteRoom(roomId string) (error)
-	JoinRoom(roomId string, metaId string) (error)
-	LeaveRoom(roomId string, metaId string) (error)
-	UserCreatedRoom(userId string) (rooms []models.Rooms ,err error)
-	AllRoom() (rooms []models.Rooms, err error)
+	CreateRoom(user models.Rooms) (models.Rooms,error)
+	DeleteRoom(roomId string) (models.Rooms,error)
+	// JoinRoom(roomId string, metaId string) (error)
+	// LeaveRoom(roomId string, metaId string) (error)
+	myRooms(userId string) ( []models.Rooms , error)
+	AllRoom() ( []models.Rooms,  error)
 
 	//rest join queries need to be added
 }

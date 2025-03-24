@@ -7,12 +7,14 @@ import (
 
 	"github.com/connect-verse/internal/api"
 	"github.com/connect-verse/internal/models"
+	"github.com/connect-verse/internal/repository/avatars"
 	"github.com/connect-verse/internal/repository/maps"
 	"github.com/connect-verse/internal/repository/user"
 	"github.com/connect-verse/internal/repository/verificationToken"
 	"github.com/connect-verse/internal/services"
 	"github.com/connect-verse/internal/services/auth-service"
-    "github.com/connect-verse/internal/services/map-service"
+	"github.com/connect-verse/internal/services/avatar-service"
+	"github.com/connect-verse/internal/services/map-service"
 	"github.com/connect-verse/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -26,25 +28,24 @@ func main(){
 		log.Fatal("error occured while initialising the database")
 	 }
 
-	 db.AutoMigrate(&models.User{}, &models.VerificationToken{})
+	 db.AutoMigrate(&models.User{}, &models.VerificationToken{}, &models.Avatars{}, &models.Maps{},&models.Rooms{})
 
 
 	 userRespository := user.NewUserImplementation(db)
      VerifyRepository := verificationtoken.NewVerifyImplementation(db)
 	 mapRepository := maps.NewMapsRepoImpl(db)
-	 if userRespository==nil && VerifyRepository==nil && mapRepository==nil{
+	 avatarRepository := avatars.NewAvatarRepoImpl(db)
+	 if avatarRepository==nil && userRespository==nil && VerifyRepository==nil && mapRepository==nil{
 		log.Fatal("error occured while initialising the userRepository")
         return
 	 }
 
 	 service,err := services.NewUserServiceImp(userRespository,validate)
-	 utils.PanicError(err)
+	 avatarservice,err := avatarservice.NewAvatarServImpl(avatarRepository,validate)
      authService,err := authservice.NewAuthServiceImplementation(userRespository,VerifyRepository,validate)
-	 utils.PanicError(err)
 	 mapService,err := mapservice.NewMapServiceImpl(mapRepository,validate)
 	 utils.PanicError(err)
-
-	 userController := handlers.NewControllerService(service,authService,mapService)
+	 userController := handlers.NewControllerService(avatarservice,service,authService,mapService)
 	 routes:=userRouter(userController)
 
 
@@ -62,7 +63,9 @@ func main(){
 }
 
 func userRouter(controller *handlers.Controller) *gin.Engine {
+
 	serve:=gin.Default()
+
 	router:= serve.Group("/user")
 	router.POST("/check",controller.Check)
 	router.POST("/delete")
@@ -90,10 +93,8 @@ func userRouter(controller *handlers.Controller) *gin.Engine {
 	avatarRouter.POST("/create-avatar",controller.CreateAvatar)
 	avatarRouter.DELETE("/delete-avatar",controller.DeleteAvatar)
 	avatarRouter.GET("/Update-avatar",controller.UpdateAvatar)
-	avatarRouter.GET("/all-avatar",controller.AllAvatar)
+	avatarRouter.GET("/all-avatar",controller.FindAllAvatar)
 	avatarRouter.GET("/find-avatar",controller.FindAvatar)
-
-
 
 
 	// metaUserRouter:= serve.Group("/metaUser")

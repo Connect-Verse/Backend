@@ -67,7 +67,7 @@ func (u *UserSerImpl) Create(user request.CreateUserRequest) error{
 	
     
     ur:= models.User{
-	//	Name: user.Name,
+		Name: &user.Name,
 		Password: user.Password,
 		Email: user.Email,
 	}
@@ -80,3 +80,19 @@ func (u *UserSerImpl) Create(user request.CreateUserRequest) error{
 	return nil
 }
 
+func (u *UserSerImpl)  FindbyEmail(email string) ( response.UserResponse , error){
+	result,err := u.UserRepo.FindbyEmail(email)
+
+
+	if err !=nil {
+		return response.UserResponse{},err
+	}
+
+	
+
+	return response.UserResponse{
+		Id: result.Id,
+		Name: *result.Name,
+		Email: result.Email,
+	},nil
+}

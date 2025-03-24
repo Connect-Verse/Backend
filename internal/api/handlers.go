@@ -4,13 +4,13 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
-	"log"
 	"net/http"
 	"github.com/connect-verse/internal/data/request"
 	"github.com/connect-verse/internal/data/response"
 	"github.com/connect-verse/internal/models"
 	"github.com/connect-verse/internal/services"
 	"github.com/connect-verse/internal/services/auth-service"
+	"github.com/connect-verse/internal/services/avatar-service"
 	"github.com/connect-verse/internal/services/map-service"
 	"github.com/connect-verse/internal/utils"
 	"github.com/gin-gonic/gin"
@@ -23,13 +23,15 @@ type Controller struct{
     authService  authservice.AuthService
 	// roomService  roomService.RoomService
 	mapService   mapservice.MapService
+	avatarService avatarservice.AvatarService
 }
 
-func NewControllerService(userService services.UserServices, authService authservice.AuthService, mapService mapservice.MapService) *Controller {
+func NewControllerService(avatarService avatarservice.AvatarService,userService services.UserServices, authService authservice.AuthService, mapService mapservice.MapService) *Controller {
   return &Controller{
 	authService: authService,
 	userService: userService,
 	mapService : mapService,
+	avatarService: avatarService,
   }
 }
 
@@ -51,7 +53,20 @@ func (c *Controller) Login(ctx *gin.Context){
 	req := request.CreateUserRequest{}
 	ctx.ShouldBindJSON(&req)
 
-	
+	result,err:=c.authService.Login(req)
+
+	if err!=nil {
+		ctx.JSON(http.StatusForbidden , response.ErrorResponse{Code:400,Message:"error occurred while creating the account"+err.Error()})
+	}
+    
+	isMatching:=utils.ComparePassword(req.Password,result.Password)
+    
+	if isMatching {
+		ctx.JSON(http.StatusOK , response.ErrorResponse{Code:200,Message:"succesfully logged in"})
+	}else{
+		ctx.JSON(http.StatusForbidden , response.ErrorResponse{Code:400,Message:"the password provided is not matching to the previous save password"})
+	}
+
 }
 
 func (c *Controller) Signup(ctx *gin.Context){
@@ -94,7 +109,7 @@ func (c *Controller) Signup(ctx *gin.Context){
 
 }
 
-
+//jwt and session creation is to be managed
 
 func (c *Controller) Verify(ctx *gin.Context) {
 	req:= struct{
@@ -102,13 +117,11 @@ func (c *Controller) Verify(ctx *gin.Context) {
 		EmailIdentifier string  `json:"email"`
 	}{}
 	ctx.ShouldBindJSON(&req)
-    log.Printf(req.EmailIdentifier)
 	err:=c.authService.Verify(req.EmailIdentifier,req.VerificationId)
    
     if err!=nil {
 		ctx.JSON(http.StatusForbidden , response.ErrorResponse{Code:400,Message:"error occurred while verifying the account"})
 	}
-
 
 	ctx.JSON(http.StatusOK, response.Response{
 		Code :  200,

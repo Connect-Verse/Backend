@@ -40,7 +40,7 @@ func (u *UserImplementation) Create(user models.User) (err error){
 
 func (u *UserImplementation) FindbyId(userId string) (users models.User,err error){
     var user models.User
-	result:= u.db.First(&user, userId)
+	result:= u.db.Where("Id=?", userId).Find(&user)
 	if result.Error != nil{
 		return models.User{}, result.Error
 	}        

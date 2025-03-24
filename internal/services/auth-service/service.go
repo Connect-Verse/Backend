@@ -36,9 +36,7 @@ type LoginResponse struct{
 	Email    string
 }
 
-type SignUpResponse struct{
 
-}
 
 func (a *AuthServiceImplementation) Login(user request.CreateUserRequest) (LoginResponse,error){
     result,err:= a.User.FindbyEmail(user.Email)
@@ -48,7 +46,7 @@ func (a *AuthServiceImplementation) Login(user request.CreateUserRequest) (Login
 	}
      res:= LoginResponse{
 		Id: result.Id,
-	//	Name: result.Name,
+		Name: *result.Name,
 		Password: result.Password,
 		Email: result.Email,
 	 }
@@ -60,7 +58,7 @@ func (a *AuthServiceImplementation) Login(user request.CreateUserRequest) (Login
 func (a *AuthServiceImplementation) SignUp(user request.CreateUserRequest,token string) error{
     req:=models.User{
       Email: user.Email,
-	  Password: "sogjei",
+	  Password: user.Password,
 	  Name: &user.Name,
 	}
 	err:= a.User.Create(req)

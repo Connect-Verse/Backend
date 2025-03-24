@@ -14,25 +14,25 @@ func  NewRoomImplementation(db *gorm.DB) (*RoomsImplementation){
      return &RoomsImplementation{db}
 }
 
-func (r *RoomsImplementation) CreateRoom(room models.Rooms) error{
+func (r *RoomsImplementation) CreateRoom(room models.Rooms) (models.Rooms,error){
 	result:= r.db.Create(&room)
 
 	if result.Error!=nil {
-		return result.Error
+		return models.Rooms{},result.Error
 	}
 	
-	return nil
+	return room,nil
 }
 
-func (r *RoomsImplementation) DeleteRoom(roomId string) error{
-
-	result:= r.db.Find(&models.Rooms{},roomId)
+func (r *RoomsImplementation) DeleteRoom(roomId string) (models.Rooms,error){
+    var room models.Rooms
+	result:= r.db.Where("id=?",roomId).Delete(&room)
 
 	if result.Error!=nil {
-		return result.Error
+		return room , result.Error
 	}
 	
-	return nil
+	return room,nil
 }
 
 // func (r *RoomsImplementation) JoinRoom(roomId string, userId string) error{
@@ -45,29 +45,29 @@ func (r *RoomsImplementation) DeleteRoom(roomId string) error{
 // 	return nil
 // }
 
-func (r *RoomsImplementation) LeaveRoom(roomId  string, userId string) error{
+// func (r *RoomsImplementation) LeaveRoom(roomId  string, userId string) error{
 	
-	result:= r.db.Find(&models.MetaUsers{}).Where("roomId= ? AND userID = ?", roomId, userId)
+// 	result:= r.db.Find(&models.MetaUsers{}).Where("roomId= ? AND userID = ?", roomId, userId)
+
+// 	if result.Error!=nil {
+// 		return result.Error
+// 	}
+	
+// 	return nil
+// }
+
+func (r *RoomsImplementation) MyRooms(userId string) ([]models.Rooms,  error){
+	var rooms []models.Rooms
+	result:= r.db.Find(&rooms).Where("user_id = ? ", userId)
 
 	if result.Error!=nil {
-		return result.Error
+		return rooms,result.Error
 	}
 	
-	return nil
+	return rooms,nil
 }
 
-func (r *RoomsImplementation) UserCreatedRoom(userId string) error{
-	var rooms models.Rooms
-	result:= r.db.Find(&rooms).Where("userId = ? ", userId)
-
-	if result.Error!=nil {
-		return result.Error
-	}
-	
-	return nil
-}
-
-func (r *RoomsImplementation) AllRoom()  (rooms []models.Rooms, err error){
+func (r *RoomsImplementation) AllRoom()  ( []models.Rooms,  error){
 	var room []models.Rooms
 	result:= r.db.Find(&room)
 

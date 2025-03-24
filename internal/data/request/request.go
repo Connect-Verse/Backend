@@ -11,12 +11,6 @@ type CreateUserRequest struct {
     Password string `validate:"required,min=1,max=20" json:"password"`
 }   
    
-type UpdateTaskRequest struct {
-	Name  	 sql.NullString `validate:"required,max=200,min=1" json:"name"`
-	Email	 string `validate:"required,min=1,max=200" json:"description"`
-    Password string `validate:"required,min=1,max=20" json:"password"`
-}
-
 type MapRequest struct {
  Image          string `validate:"required,max=200,min=1" json:"image"`
  Tiles	        string `validate:"required,max=200,min=1" json:"tiles"`
@@ -24,7 +18,15 @@ type MapRequest struct {
 }
 
 type AvatarRequest struct{
-	Name    string `validate:"required,max=200,min=1" json:"Name"`
+	Name    string `validate:"required,max=200,min=1" json:"name"`
     Image   string `validate:"required,max=200,min=1" json:"image"`
 	ExistedFrom time.Time `validate:"required,max=200,min=1" json:"existedFrom"`
+}
+
+type RoomRequest struct{
+	Name    string `validate:"required,max=200,min=1" json:"name"`
+    CreatedBy  string `validate:"required,max=200,min=1" json:"createdBy"`
+	MapId string `validate:"required,max=200,min=1" json:"mapId"`
+    UserIds []string  `validate:"required,max=200,min=1" json:"usersIds"`   
+	MetaUsersIds []string  `validate:"required,max=200,min=1" json:"metaUsersIds"`
 }

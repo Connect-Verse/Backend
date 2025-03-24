@@ -25,7 +25,7 @@ func NewAvatarServImpl(avatarRepo avatars.AvatarsRepository, validate *validator
 	 },nil
 }
 
-func (m *AvatarServImpl) CreateMap(avatar request.AvatarRequest) (response.AvatarResponse,error){
+func (m *AvatarServImpl) CreateAvatar(avatar request.AvatarRequest) (response.AvatarResponse,error){
 	result,err:= m.AvatarRepo.CreateAvatar(models.Avatars{
 	   Image: avatar.Image,
 	   Name: avatar.Name,
