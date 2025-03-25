@@ -9,12 +9,16 @@ import (
 	"github.com/connect-verse/internal/models"
 	"github.com/connect-verse/internal/repository/avatars"
 	"github.com/connect-verse/internal/repository/maps"
+	"github.com/connect-verse/internal/repository/metaUser"
+	"github.com/connect-verse/internal/repository/rooms"
 	"github.com/connect-verse/internal/repository/user"
 	"github.com/connect-verse/internal/repository/verificationToken"
 	"github.com/connect-verse/internal/services"
 	"github.com/connect-verse/internal/services/auth-service"
 	"github.com/connect-verse/internal/services/avatar-service"
 	"github.com/connect-verse/internal/services/map-service"
+	"github.com/connect-verse/internal/services/meta-users"
+	"github.com/connect-verse/internal/services/room-service"
 	"github.com/connect-verse/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -28,24 +32,30 @@ func main(){
 		log.Fatal("error occured while initialising the database")
 	 }
 
-	 db.AutoMigrate(&models.User{}, &models.VerificationToken{}, &models.Avatars{}, &models.Maps{},&models.Rooms{})
+	 db.AutoMigrate(&models.User{}, &models.VerificationToken{}, &models.Avatars{}, &models.Maps{},&models.Rooms{},&models.MetaUsers{},&models.PlayerPosition{})
 
 
 	 userRespository := user.NewUserImplementation(db)
      VerifyRepository := verificationtoken.NewVerifyImplementation(db)
 	 mapRepository := maps.NewMapsRepoImpl(db)
 	 avatarRepository := avatars.NewAvatarRepoImpl(db)
-	 if avatarRepository==nil && userRespository==nil && VerifyRepository==nil && mapRepository==nil{
+	 roomRepository := rooms.NewRoomImplementation(db)
+	 metaRepository := metauser.NewMetaRepoImpl(db)
+	 if metaRepository==nil && roomRepository==nil && avatarRepository==nil && userRespository==nil && VerifyRepository==nil && mapRepository==nil{
 		log.Fatal("error occured while initialising the userRepository")
         return
 	 }
-
+     //services
 	 service,err := services.NewUserServiceImp(userRespository,validate)
 	 avatarservice,err := avatarservice.NewAvatarServImpl(avatarRepository,validate)
      authService,err := authservice.NewAuthServiceImplementation(userRespository,VerifyRepository,validate)
 	 mapService,err := mapservice.NewMapServiceImpl(mapRepository,validate)
+	 roomService,err := roomservice.NewRoomServiceImpl(roomRepository,validate)
+	 metaService, err := metaservice.NewMetaServiceImpl(metaRepository,validate)
 	 utils.PanicError(err)
-	 userController := handlers.NewControllerService(avatarservice,service,authService,mapService)
+	 
+	 //controllers
+	 userController := handlers.NewControllerService(metaService,roomService,avatarservice,service,authService,mapService)
 	 routes:=userRouter(userController)
 
 
@@ -82,11 +92,11 @@ func userRouter(controller *handlers.Controller) *gin.Engine {
 	mapsRouter.GET("/find-map",controller.FindMap)
 	mapsRouter.PATCH("/update-map",controller.UpdateMap)
 
-	// roomsRouter:= serve.Group("/rooms")
-	// roomsRouter.POST("/create-room",controller.CreateRoom)
-	// roomsRouter.DELETE("/delete-room",controller.DeleteRoom)
-	// roomsRouter.GET("/users-room",controller.GetUsers)
-	// roomsRouter.GET("/all-rooms",controller.AllRooms)
+	roomsRouter:= serve.Group("/rooms")
+	roomsRouter.POST("/create-room",controller.CreateRoom)
+	roomsRouter.DELETE("/delete-room",controller.DeleteRoom)
+	roomsRouter.GET("/users-room",controller.MyRoom)
+	roomsRouter.GET("/all-rooms",controller.FindAllRooms)
 
 
 	avatarRouter:= serve.Group("/avatar")
@@ -97,11 +107,16 @@ func userRouter(controller *handlers.Controller) *gin.Engine {
 	avatarRouter.GET("/find-avatar",controller.FindAvatar)
 
 
-	// metaUserRouter:= serve.Group("/metaUser")
-	// metaUserRouter.POST("/create-metaUser",controller.CreateMetaUser)
-	// metaUserRouter.DELETE("/delete-metaUser",controller.DeleteMetaUser)
-	// metaUserRouter.GET("/rooms-metaUser",controller.GetMetaUser)
-	// metaUserRouter.GET("/all-metaUser",controller.AllMetaUser)
+	metaUserRouter:= serve.Group("/metaUser")
+	metaUserRouter.POST("/create-metaUser",controller.CreateMeta)
+	metaUserRouter.DELETE("/delete-metaUser",controller.DeleteMetaUser)
+	metaUserRouter.GET("/find-metaUser",controller.FindById)
+
+	// playerPosRouter:= serve.Group("/player-position")
+	// playerPosRouter.POST("/create-metaUser",controller.CreateMetaUser)
+	// playerPosRouter.DELETE("/delete-metaUser",controller.DeleteMetaUser)
+	// playerPosRouter.GET("/rooms-metaUser",controller.GetMetaUser)
+	// playerPosRouter.GET("/all-metaUser",controller.AllMetaUser)
 
 	return serve
 }

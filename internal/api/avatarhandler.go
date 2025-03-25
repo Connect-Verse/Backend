@@ -17,6 +17,7 @@ func (c *Controller) CreateAvatar(ctx *gin.Context ) {
 		 ctx.JSON(http.StatusForbidden,response.ErrorResponse{
 			Code: 400,
 			Message: "internal server error occured while generating Avatar",
+			Err:err.Error(),
 		})
 	}
 
@@ -39,6 +40,7 @@ func (c *Controller) DeleteAvatar(ctx *gin.Context ) {
 		 ctx.JSON(http.StatusForbidden,response.ErrorResponse{
 			Code: 400,
 			Message: "internal server error occured while generating Avatar",
+			Err:err.Error(),
 		})
 	}
 
@@ -61,6 +63,7 @@ func (c *Controller) UpdateAvatar(ctx *gin.Context ) {
 		 ctx.JSON(http.StatusForbidden,response.ErrorResponse{
 			Code: 400,
 			Message: "internal server error occured while generating Avatar",
+			Err:err.Error(),
 		})
 	}
 
@@ -83,7 +86,9 @@ func (c *Controller) FindAvatar(ctx *gin.Context ) {
 		 ctx.JSON(http.StatusForbidden,response.ErrorResponse{
 			Code: 400,
 			Message: "internal server error occured while generating Avatar",
+			Err:err.Error(),
 		})
+		
 	}
 
 	ctx.JSON(http.StatusOK,response.AvatarResponse{
@@ -106,6 +111,7 @@ func (c *Controller) FindAllAvatar(ctx *gin.Context ) {
 		 ctx.JSON(http.StatusForbidden,response.ErrorResponse{
 			Code: 400,
 			Message: "internal server error occured while generating Avatar",
+			Err:err.Error(),
 		})
 	}
 

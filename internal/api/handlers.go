@@ -12,99 +12,99 @@ import (
 	"github.com/connect-verse/internal/services/auth-service"
 	"github.com/connect-verse/internal/services/avatar-service"
 	"github.com/connect-verse/internal/services/map-service"
+	"github.com/connect-verse/internal/services/meta-users"
+	"github.com/connect-verse/internal/services/room-service"
 	"github.com/connect-verse/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
-
-
-type Controller struct{
-	userService  services.UserServices
-    authService  authservice.AuthService
-	// roomService  roomService.RoomService
-	mapService   mapservice.MapService
+type Controller struct {
+	userService   services.UserServices
+	authService   authservice.AuthService
+	roomService   roomservice.RoomService
+	mapService    mapservice.MapService
 	avatarService avatarservice.AvatarService
+	metaService   metaservice.MetaService
 }
 
-func NewControllerService(avatarService avatarservice.AvatarService,userService services.UserServices, authService authservice.AuthService, mapService mapservice.MapService) *Controller {
-  return &Controller{
-	authService: authService,
-	userService: userService,
-	mapService : mapService,
-	avatarService: avatarService,
-  }
+func NewControllerService(metaService metaservice.MetaService,roomService roomservice.RoomService, avatarService avatarservice.AvatarService, userService services.UserServices, authService authservice.AuthService, mapService mapservice.MapService) *Controller {
+	return &Controller{
+		authService:   authService,
+		userService:   userService,
+		mapService:    mapService,
+		avatarService: avatarService,
+		roomService:   roomService,
+		metaService:   metaService,
+	}
 }
 
-
-func (c *Controller) Check(ctx *gin.Context){
+func (c *Controller) Check(ctx *gin.Context) {
 	res := response.Response{
 		Code:   200,
 		Status: "Ok",
-		Data:   models.User{
-			Email:"siofjioe",
+		Data: models.User{
+			Email: "siofjioe",
 		},
-	   }
-	   
-	   ctx.JSON(http.StatusOK, res)
+	}
+
+	ctx.JSON(http.StatusOK, res)
 }
 
-
-func (c *Controller) Login(ctx *gin.Context){
+func (c *Controller) Login(ctx *gin.Context) {
 	req := request.CreateUserRequest{}
 	ctx.ShouldBindJSON(&req)
 
-	result,err:=c.authService.Login(req)
+	result, err := c.authService.Login(req)
 
-	if err!=nil {
-		ctx.JSON(http.StatusForbidden , response.ErrorResponse{Code:400,Message:"error occurred while creating the account"+err.Error()})
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "error occurred while creating the account" + err.Error(), Err: err.Error()})
 	}
-    
-	isMatching:=utils.ComparePassword(req.Password,result.Password)
-    
+
+	isMatching := utils.ComparePassword(req.Password, result.Password)
+
 	if isMatching {
-		ctx.JSON(http.StatusOK , response.ErrorResponse{Code:200,Message:"succesfully logged in"})
-	}else{
-		ctx.JSON(http.StatusForbidden , response.ErrorResponse{Code:400,Message:"the password provided is not matching to the previous save password"})
+		ctx.JSON(http.StatusOK, response.ErrorResponse{Code: 200, Message: "succesfully logged in"})
+	} else {
+		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "the password provided is not matching to the previous save password", Err: err.Error()})
 	}
 
 }
 
-func (c *Controller) Signup(ctx *gin.Context){
-	req := struct{
-    Name     string `validate:"required,min=1,max=200" json:"name"`
-	Email    string `validate:"required,min=1,max=50" json:"email"`
-    Password string `validate:"required,min=1,max=20" json:"password"`
+func (c *Controller) Signup(ctx *gin.Context) {
+	req := struct {
+		Name     string `validate:"required,min=1,max=200" json:"name"`
+		Email    string `validate:"required,min=1,max=50" json:"email"`
+		Password string `validate:"required,min=1,max=20" json:"password"`
 	}{}
 	ctx.ShouldBindJSON(&req)
-	h:= sha256.New()
+	h := sha256.New()
 	h.Write([]byte(req.Email))
-	br:=h.Sum(nil)
-	hashedPassword,err:= utils.HashPassword(req.Password)
-	
-	if err!=nil{
-		ctx.JSON(http.StatusForbidden , response.ErrorResponse{Code:400,Message:"error occurred while creating the account"})
+	br := h.Sum(nil)
+	hashedPassword, err := utils.HashPassword(req.Password)
+
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "error occurred while creating the account", Err: err.Error()})
 	}
 
-
-	requiredReq:= request.CreateUserRequest{
-		Name: sql.NullString{String:req.Name, Valid: true},
-		Email: req.Email,
+	requiredReq := request.CreateUserRequest{
+		Name:     sql.NullString{String: req.Name, Valid: true},
+		Email:    req.Email,
 		Password: hashedPassword,
 	}
-	err= c.authService.SignUp(requiredReq,hex.EncodeToString(br))
+	err = c.authService.SignUp(requiredReq, hex.EncodeToString(br))
 
-	if err!=nil{
-		ctx.JSON(http.StatusForbidden , response.ErrorResponse{Code:400,Message:"error occurred while creating the account"})
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "error occurred while creating the account", Err: err.Error()})
 	}
-    
+
 	ctx.JSON(http.StatusOK, response.Response{
-		Code :  200,
-    Status :"ok",
-    Data  : struct{
-		email string
-	}{
-      email:req.Email,
-	},
+		Code:   200,
+		Status: "ok",
+		Data: struct {
+			email string
+		}{
+			email: req.Email,
+		},
 	})
 
 }
@@ -112,26 +112,25 @@ func (c *Controller) Signup(ctx *gin.Context){
 //jwt and session creation is to be managed
 
 func (c *Controller) Verify(ctx *gin.Context) {
-	req:= struct{
-		VerificationId string  `json:"tokenId"`
-		EmailIdentifier string  `json:"email"`
+	req := struct {
+		VerificationId  string `json:"tokenId"`
+		EmailIdentifier string `json:"email"`
 	}{}
 	ctx.ShouldBindJSON(&req)
-	err:=c.authService.Verify(req.EmailIdentifier,req.VerificationId)
-   
-    if err!=nil {
-		ctx.JSON(http.StatusForbidden , response.ErrorResponse{Code:400,Message:"error occurred while verifying the account"})
+	err := c.authService.Verify(req.EmailIdentifier, req.VerificationId)
+
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "error occurred while verifying the account", Err: err.Error()})
 	}
 
 	ctx.JSON(http.StatusOK, response.Response{
-		Code :  200,
-    Status :"ok",
-    Data  : struct{
-		email string
-	}{
-      email:req.EmailIdentifier,
-	},
+		Code:   200,
+		Status: "ok",
+		Data: struct {
+			email string
+		}{
+			email: req.EmailIdentifier,
+		},
 	})
-
 
 }

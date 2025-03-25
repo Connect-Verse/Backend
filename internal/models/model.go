@@ -77,6 +77,7 @@ type PlayerPosition struct{
 	X_cordinate float64
 	Y_cordinate float64
 	MetaUsersId string
+
 }
 
 

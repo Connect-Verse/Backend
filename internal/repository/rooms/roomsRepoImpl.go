@@ -26,7 +26,7 @@ func (r *RoomsImplementation) CreateRoom(room models.Rooms) (models.Rooms,error)
 
 func (r *RoomsImplementation) DeleteRoom(roomId string) (models.Rooms,error){
     var room models.Rooms
-	result:= r.db.Where("id=?",roomId).Delete(&room)
+	result:= r.db.Preload("Map").Where("id=?",roomId).Delete(&room)
 
 	if result.Error!=nil {
 		return room , result.Error
@@ -58,7 +58,7 @@ func (r *RoomsImplementation) DeleteRoom(roomId string) (models.Rooms,error){
 
 func (r *RoomsImplementation) MyRooms(userId string) ([]models.Rooms,  error){
 	var rooms []models.Rooms
-	result:= r.db.Find(&rooms).Where("user_id = ? ", userId)
+	result:= r.db.Preload("Map").Where("created_by = ?", userId).Find(&rooms)
 
 	if result.Error!=nil {
 		return rooms,result.Error
@@ -69,10 +69,23 @@ func (r *RoomsImplementation) MyRooms(userId string) ([]models.Rooms,  error){
 
 func (r *RoomsImplementation) AllRoom()  ( []models.Rooms,  error){
 	var room []models.Rooms
-	result:= r.db.Find(&room)
+	result:= r.db.Preload("Map").Find(&room)
 
 	if result.Error!=nil {
 		return nil,result.Error
+	}
+	
+	return room,nil
+}
+
+func (r *RoomsImplementation) FindById(roomId string) (models.Rooms, error){
+	var room models.Rooms
+
+	result := r.db.Preload("Map").Where("id = ? ", roomId).Find(&room)
+
+
+	if result.Error!=nil {
+		return room,result.Error
 	}
 	
 	return room,nil

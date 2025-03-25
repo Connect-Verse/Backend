@@ -2,6 +2,7 @@ package mapservice
 
 import (
 	"errors"
+
 	"github.com/connect-verse/internal/data/request"
 	"github.com/connect-verse/internal/data/response"
 	"github.com/connect-verse/internal/models"
@@ -27,7 +28,13 @@ func NewMapServiceImpl(mapService maps.MapsRepository, validate *validator.Valid
 
 
   func (m *MapServiceImpl) CreateMap(mapp request.MapRequest) (response.MapResponse,error){
-     result,err:= m.mapRepo.CreateMap(models.Maps{
+    
+	err:= m.validate.Struct(mapp)
+	if err!=nil{
+		return response.MapResponse{},errors.New("the data provided is not matching with the schema")
+	}
+	
+	result,err:= m.mapRepo.CreateMap(models.Maps{
 		Image: mapp.Image,
 		Tiles: mapp.Tiles,
 		Info: mapp.Info,

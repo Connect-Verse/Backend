@@ -1,8 +1,9 @@
 package response
 
 import (
-	"time"
 	"database/sql"
+	"time"
+
 )
 
 type Response struct {
@@ -14,6 +15,7 @@ type Response struct {
 type ErrorResponse struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
+	Err     string        `json:"err"`
 }
 
 type UserResponse struct {
@@ -43,9 +45,20 @@ type RoomResponse struct{
 	MetaUsers []string   `json:"metaUsers"`
   }
 
-type AvatarResponse struct{
+type AvatarResponse struct {
 	Id string  		`json:"id"`
 	Name string 	`json:"name"`
 	Image string 	`json:"image"`
 	ExistedFrom time.Time `json:"existedFrom"`
+}
+
+type MetaUserResponse struct {
+	Id string     `json:"id"`
+	Name string    `json:"name"`
+	UserAvatarId string `json:"userAvatarId"`
+	Avatar AvatarResponse    `json:"avatar"`
+	UserId string    `json:"userId"`
+	RoomId string    `json:"roomId"`
+	Room string    `json:"room"`
+	Position string    `json:"position"`
 }

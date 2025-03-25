@@ -9,8 +9,8 @@ type RoomsRepository interface{
 	DeleteRoom(roomId string) (models.Rooms,error)
 	// JoinRoom(roomId string, metaId string) (error)
 	// LeaveRoom(roomId string, metaId string) (error)
-	myRooms(userId string) ( []models.Rooms , error)
-	AllRoom() ( []models.Rooms,  error)
-
+	MyRooms(userId string) ([]models.Rooms,error)
+	AllRoom() ([]models.Rooms,  error)
+    // FindById(roomId string) (models.Rooms, error)
 	//rest join queries need to be added
 }
