@@ -33,7 +33,7 @@ type RoomRequest struct{
 
 type MetaUser struct {
 	Name    string `validate:"required,max=200,min=1" json:"name"`
-    UserAvatarId  string `validate:"required,max=200,min=1" json:"userAvatarId"`
+    UserAvatarId  string `validate:"max=200,min=1" json:"userAvatarId"`
 	RoomId string `validate:"required,max=200,min=1" json:"roomId"`
     UserId string  `validate:"required,max=200,min=1" json:"userId"`   
 }

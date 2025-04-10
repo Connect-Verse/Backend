@@ -11,6 +11,6 @@ type RoomsRepository interface{
 	// LeaveRoom(roomId string, metaId string) (error)
 	MyRooms(userId string) ([]models.Rooms,error)
 	AllRoom() ([]models.Rooms,  error)
-    // FindById(roomId string) (models.Rooms, error)
+    FindById(roomId string) (models.Rooms, error)
 	//rest join queries need to be added
 }

@@ -1,6 +1,8 @@
 package rooms
 
 import (
+	"fmt"
+
 	"github.com/connect-verse/internal/models"
 	"gorm.io/gorm"
 )
@@ -80,9 +82,8 @@ func (r *RoomsImplementation) AllRoom()  ( []models.Rooms,  error){
 
 func (r *RoomsImplementation) FindById(roomId string) (models.Rooms, error){
 	var room models.Rooms
-
-	result := r.db.Preload("Map").Where("id = ? ", roomId).Find(&room)
-
+    fmt.Print(roomId)
+	result := r.db.Preload("Map").Preload("MetaUsers").Where("id = ? ", roomId).Find(&room)
 
 	if result.Error!=nil {
 		return room,result.Error

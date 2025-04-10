@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 	"time"
-
 	"github.com/connect-verse/internal/api"
+	"github.com/connect-verse/internal/middleware"
 	"github.com/connect-verse/internal/models"
 	"github.com/connect-verse/internal/repository/avatars"
 	"github.com/connect-verse/internal/repository/maps"
@@ -25,6 +25,7 @@ import (
 )
 
 func main(){
+
 	 db:= utils.DatabaseConnection()
 	 validate := validator.New()
 
@@ -75,31 +76,41 @@ func main(){
 func userRouter(controller *handlers.Controller) *gin.Engine {
 
 	serve:=gin.Default()
+    
+	serve.Use(middleware.CorsMiddleware())
 
-	router:= serve.Group("/user")
+	router:= serve.Group("/user").Use(middleware.Middleware)
 	router.POST("/check",controller.Check)
 	router.POST("/delete")
+
+	userRouter:=serve.Group("/user").Use(middleware.Middleware)
+	userRouter.GET("/userDetails",controller.FindByEmail)
+
 
 	authRouter:= serve.Group("/auth")
 	authRouter.POST("/login",controller.Login)
 	authRouter.POST("/signUp",controller.Signup)
 	authRouter.POST("/verify-User",controller.Verify)
+	authRouter.POST("/logout",controller.Logout)
+	
 
-	mapsRouter:= serve.Group("/maps")
+	mapsRouter:= serve.Group("/maps").Use(middleware.Middleware)
 	mapsRouter.POST("/create-map",controller.CreateMap)
 	mapsRouter.DELETE("/delete-map",controller.DeleteMap)
 	mapsRouter.GET("/all-maps",controller.FindAllMap)
 	mapsRouter.GET("/find-map",controller.FindMap)
 	mapsRouter.PATCH("/update-map",controller.UpdateMap)
+	
 
-	roomsRouter:= serve.Group("/rooms")
+
+	roomsRouter:= serve.Group("/rooms").Use(middleware.Middleware)
 	roomsRouter.POST("/create-room",controller.CreateRoom)
 	roomsRouter.DELETE("/delete-room",controller.DeleteRoom)
 	roomsRouter.GET("/users-room",controller.MyRoom)
 	roomsRouter.GET("/all-rooms",controller.FindAllRooms)
+    roomsRouter.POST("/roomId",controller.FindRoomById)
 
-
-	avatarRouter:= serve.Group("/avatar")
+	avatarRouter:= serve.Group("/avatar").Use(middleware.Middleware)
 	avatarRouter.POST("/create-avatar",controller.CreateAvatar)
 	avatarRouter.DELETE("/delete-avatar",controller.DeleteAvatar)
 	avatarRouter.GET("/Update-avatar",controller.UpdateAvatar)
@@ -107,7 +118,7 @@ func userRouter(controller *handlers.Controller) *gin.Engine {
 	avatarRouter.GET("/find-avatar",controller.FindAvatar)
 
 
-	metaUserRouter:= serve.Group("/metaUser")
+	metaUserRouter:= serve.Group("/metaUser").Use(middleware.Middleware)
 	metaUserRouter.POST("/create-metaUser",controller.CreateMeta)
 	metaUserRouter.DELETE("/delete-metaUser",controller.DeleteMetaUser)
 	metaUserRouter.GET("/find-metaUser",controller.FindById)

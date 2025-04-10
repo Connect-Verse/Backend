@@ -72,27 +72,22 @@ func (u *UserSerImpl) Create(user request.CreateUserRequest) error{
 		Email: user.Email,
 	}
     
-	err=u.UserRepo.Create(ur)
+	result,err:=u.UserRepo.Create(ur)
 	if err!=nil {
 		return err
 	}
-	
+	fmt.Print(result)
 	return nil
 }
 
-func (u *UserSerImpl)  FindbyEmail(email string) ( response.UserResponse , error){
+func (u *UserSerImpl)  FindbyEmail(email string) ( models.User , error){
 	result,err := u.UserRepo.FindbyEmail(email)
 
-
 	if err !=nil {
-		return response.UserResponse{},err
+		return models.User{},err
 	}
 
 	
 
-	return response.UserResponse{
-		Id: result.Id,
-		Name: *result.Name,
-		Email: result.Email,
-	},nil
+	return result,nil
 }

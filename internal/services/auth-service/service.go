@@ -3,8 +3,10 @@ package authservice
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"time"
+
 	"github.com/connect-verse/internal/data/request"
 	"github.com/connect-verse/internal/models"
 	"github.com/connect-verse/internal/repository/user"
@@ -39,11 +41,13 @@ type LoginResponse struct{
 
 
 func (a *AuthServiceImplementation) Login(user request.CreateUserRequest) (LoginResponse,error){
+	fmt.Print(user.Email)
     result,err:= a.User.FindbyEmail(user.Email)
 
 	if err!=nil {
 		return LoginResponse{},err
 	}
+	fmt.Print(result)
      res:= LoginResponse{
 		Id: result.Id,
 		Name: *result.Name,
@@ -55,17 +59,17 @@ func (a *AuthServiceImplementation) Login(user request.CreateUserRequest) (Login
 
 
 
-func (a *AuthServiceImplementation) SignUp(user request.CreateUserRequest,token string) error{
+func (a *AuthServiceImplementation) SignUp(user request.CreateUserRequest,token string) (LoginResponse,error){
     req:=models.User{
       Email: user.Email,
 	  Password: user.Password,
 	  Name: &user.Name,
 	}
-	err:= a.User.Create(req)
+	result,err:= a.User.Create(req)
    
 	if err!=nil{
 		log.Print(err.Error(),"this is error")
-		return err
+		return LoginResponse{},err
 	}
 
 	 err = a.Verification.Create(models.VerificationToken{
@@ -77,11 +81,16 @@ func (a *AuthServiceImplementation) SignUp(user request.CreateUserRequest,token 
 
 	if err!=nil{
 		log.Print(err.Error())
-		return err
+		return LoginResponse{},err
 	}
 
 
-	return nil
+	return LoginResponse{
+		Id: result.Id,
+		Email: result.Email,
+		Password: result.Password,
+		Name: *result.Name,
+	},nil
 }
 
 
@@ -97,7 +106,6 @@ func (a *AuthServiceImplementation) Verify(email string,tokenId string) error {
 	err= a.Verification.Delete(tokenId)
 
 	if err!=nil {
-		log.Printf(err.Error())
 		return err
 	}
 	  return nil
@@ -105,3 +113,5 @@ func (a *AuthServiceImplementation) Verify(email string,tokenId string) error {
    
    return errors.New("token provide is not matching with token stored in the database")  
 }
+
+

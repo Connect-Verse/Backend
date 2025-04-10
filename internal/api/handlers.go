@@ -4,7 +4,9 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
+	"fmt"
 	"net/http"
+
 	"github.com/connect-verse/internal/data/request"
 	"github.com/connect-verse/internal/data/response"
 	"github.com/connect-verse/internal/models"
@@ -50,19 +52,33 @@ func (c *Controller) Check(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+
 func (c *Controller) Login(ctx *gin.Context) {
 	req := request.CreateUserRequest{}
 	ctx.ShouldBindJSON(&req)
 
 	result, err := c.authService.Login(req)
-
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "error occurred while creating the account" + err.Error(), Err: err.Error()})
 	}
 
 	isMatching := utils.ComparePassword(req.Password, result.Password)
 
-	if isMatching {
+
+	if isMatching==nil {
+
+		fmt.Print("logging the error",result,req)
+
+		
+		token,err := utils.GenerateToken(result.Id,result.Email,result.Name.String)
+
+		if err!=nil{
+			ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "error occurred while creating the account", Err: err.Error()})
+		}
+	
+		ctx.SetCookie("token", token, 360000, "/", "localhost", false, true)
+
+		
 		ctx.JSON(http.StatusOK, response.ErrorResponse{Code: 200, Message: "succesfully logged in"})
 	} else {
 		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "the password provided is not matching to the previous save password", Err: err.Error()})
@@ -77,9 +93,11 @@ func (c *Controller) Signup(ctx *gin.Context) {
 		Password string `validate:"required,min=1,max=20" json:"password"`
 	}{}
 	ctx.ShouldBindJSON(&req)
+
 	h := sha256.New()
 	h.Write([]byte(req.Email))
 	br := h.Sum(nil)
+
 	hashedPassword, err := utils.HashPassword(req.Password)
 
 	if err != nil {
@@ -91,11 +109,21 @@ func (c *Controller) Signup(ctx *gin.Context) {
 		Email:    req.Email,
 		Password: hashedPassword,
 	}
-	err = c.authService.SignUp(requiredReq, hex.EncodeToString(br))
+
+	result,err := c.authService.SignUp(requiredReq, hex.EncodeToString(br))
 
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "error occurred while creating the account", Err: err.Error()})
 	}
+
+	token,err := utils.GenerateToken(result.Id,result.Email,result.Name.String)
+
+	if err!=nil{
+		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "error occurred while creating the account", Err: err.Error()})
+	}
+
+	ctx.SetCookie("token", token, 360000, "/", "localhost", false, true)
+
 
 	ctx.JSON(http.StatusOK, response.Response{
 		Code:   200,
@@ -133,4 +161,33 @@ func (c *Controller) Verify(ctx *gin.Context) {
 		},
 	})
 
+}
+
+
+func (c *Controller) FindByEmail (ctx *gin.Context){
+
+	userEmail,ok :=ctx.Get("email")
+	
+	email, ok := userEmail.(string)
+	
+	if !ok{
+	fmt.Print("unable to assert the string type for this")// handle type assertion failure
+	}    
+	result,err:=c.userService.FindbyEmail(email)
+
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "error occurred while finding the users", Err: err.Error()})
+	}
+
+	ctx.JSON(http.StatusOK,result)
+
+}
+
+
+func (c *Controller) Logout(ctx *gin.Context){
+	ctx.SetCookie("token", "", 360000, "/", "localhost", false, true)
+	ctx.JSON(http.StatusOK,response.Response{
+	Code:http.StatusAccepted,
+	Status:"200",
+	})
 }

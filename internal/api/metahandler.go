@@ -6,6 +6,7 @@ import (
 
 	"github.com/connect-verse/internal/data/request"
 	"github.com/connect-verse/internal/data/response"
+	"github.com/connect-verse/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,9 +14,19 @@ import (
 func (c *Controller) CreateMeta(ctx *gin.Context){
   req:= request.MetaUser{}
   ctx.ShouldBindJSON(&req);
+  id,ok:=utils.ExtractUser(ctx)
+  if !ok{
+	ctx.JSON(http.StatusBadRequest,response.ErrorResponse{
+		Code:400,
+		Message: "server error occurred",
+		Err: "unable to extract user in the meta created usee",
+		
+	})
+  }
+  req.UserId=id
 
   result,err:=c.metaService.CreateMeta(req)
-
+  
   if err!=nil{
 	ctx.JSON(http.StatusBadRequest,response.ErrorResponse{
 		Code:400,

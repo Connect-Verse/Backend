@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/connect-verse/internal/data/request"
@@ -16,14 +17,24 @@ type roomId struct{
 func (c *Controller) CreateRoom(ctx *gin.Context) {
 	req := request.RoomRequest{}
 	ctx.ShouldBindJSON(&req)
+	userId,ok :=ctx.Get("id")
+	
+	fmt.Print(userId,"did not get")
+	Id, ok := userId.(string)
+	
+	if !ok{
+	fmt.Print("unable to assert the string type for this")// handle type assertion failure
+	}
+	
+	req.CreatedBy=Id
 
-	result, err := c.roomService.CreateRoom(req)
+	result, errs := c.roomService.CreateRoom(req)
 
-	if err != nil {
+	if errs != nil {
 		ctx.JSON(http.StatusForbidden, response.ErrorResponse{
 			Code:    400,
 			Message: "internal server error occured while generating Room",
-			Err:     err.Error(),
+			Err:     errs.Error(),
 		})
 	}
 
@@ -84,6 +95,30 @@ func (c *Controller) FindAllRooms(ctx *gin.Context) {
 	ctx.ShouldBindJSON(&req)
 
 	result, err := c.roomService.FindAllRooms()
+
+	if err != nil {
+		ctx.JSON(http.StatusForbidden, response.ErrorResponse{
+			Code:    400,
+			Message: "internal server error occured while generating Room",
+			Err:     err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, result)
+
+}
+
+
+func (c *Controller) FindRoomById(ctx *gin.Context) {
+
+	type roomId struct{
+		Id string `json:"id"`
+	}
+	req:=roomId{}
+	
+	ctx.ShouldBindJSON(&req)
+     fmt.Print(req,"req")
+	result, err := c.roomService.FindById(req.Id)
 
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, response.ErrorResponse{

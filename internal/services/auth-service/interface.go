@@ -6,6 +6,6 @@ import (
 
 type AuthService interface{
 	Login(user request.CreateUserRequest) (LoginResponse,error)
-	SignUp(user request.CreateUserRequest,token string) error
+	SignUp(user request.CreateUserRequest,token string) (LoginResponse,error)
 	Verify(email string,tokenId string) error
 }

@@ -2,13 +2,14 @@ package roomservice
 
 import (
 	"errors"
+	"fmt"
+
 	"github.com/connect-verse/internal/data/request"
 	"github.com/connect-verse/internal/data/response"
 	"github.com/connect-verse/internal/models"
 	"github.com/connect-verse/internal/repository/rooms"
 	"github.com/go-playground/validator/v10"
-     
-    )
+)
 
 type RoomServiceImpl struct{
 	RoomRepo     rooms.RoomsRepository
@@ -105,6 +106,17 @@ func NewRoomServiceImpl(RoomService rooms.RoomsRepository, validate *validator.V
 	 return Rooms,nil
   }
 
+
+  func (m *RoomServiceImpl) FindById(roomId string) (models.Rooms,error){
+	fmt.Print(roomId,"sfs")
+	result,err:= m.RoomRepo.FindById(roomId)
+
+	 if err!=nil {
+		return models.Rooms{},err
+	 }
+	 
+	 return result,nil
+  }
 
   func (m *RoomServiceImpl) FindAllRooms() ([]response.RoomResponse,error){
 	result,err:= m.RoomRepo.AllRoom()

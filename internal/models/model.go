@@ -8,10 +8,10 @@ import (
 )
 
 type User struct{
-	Id         string   `gorm:"unique;primaryKey"`
-	Name       *sql.NullString	
-	Email      string     `gorm:"unique"`
-	Password   string
+	Id             string   	`gorm:"unique;primaryKey"`
+	Name      	   *sql.NullString	
+	Email      	   string     	`gorm:"unique"`
+	Password   	   string
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 	CreatedRooms   []Rooms      `gorm:"foreignKey:CreatedBy"`
@@ -19,7 +19,7 @@ type User struct{
 }
 
 type VerificationToken struct{
-	Id  			string        `gorm:"type:uuid;primaryKey"`
+	Id  			string        `gorm:"unique;primaryKey"`
 	EmailIdentifier string  
 	Token           string
 	CreatedAt 		time.Time
@@ -27,14 +27,14 @@ type VerificationToken struct{
 }
 
 type Session struct{
-	Id              	string      `gorm:"primaryKey"`
+	Id              	string      `gorm:"unique;primaryKey"`
 	AccountProvider 	string
 	SignInAt    	  time.Time
 	SignedOutAt 	  time.Time
 }
 
 type Maps struct{
-	Id 				string
+	Id 				string    `gorm:"unique;primaryKey"`
 	Image          	string
 	Tiles	        string
 	Info		    string
@@ -43,7 +43,7 @@ type Maps struct{
 }
 
 type Avatars struct{
-	Id             string
+	Id             string    `gorm:"unique;primaryKey"`
 	Name           string
 	Image          string
 	ExistedFrom    time.Time
@@ -51,9 +51,10 @@ type Avatars struct{
 }
 
 type Rooms struct{
-	Id           string
+	Id           string      `gorm:"unique;primaryKey"`
 	Name         string
 	CreatedBy    string
+	CreatedUser  User        `gorm:"references:Id; foreignKey:CreatedBy"`
 	MapId        string
 	Map          Maps        `gorm:"references:Id; foreignKey:MapId"`
 	UsersJoined  []User      `gorm:"many2many:user_joined_room;"`
@@ -62,7 +63,7 @@ type Rooms struct{
 }
 
 type MetaUsers struct  {
-	Id           string
+	Id           string         `gorm:"unique;primaryKey"`
 	Name         string
 	UserAvatarId string
 	UserAvatar   Avatars   		`gorm:"foreignKey:UserAvatarId; references:Id; "`
@@ -73,7 +74,7 @@ type MetaUsers struct  {
 }
 
 type PlayerPosition struct{
-	Id          string
+	Id          string       `gorm:"unique;primaryKey"`
 	X_cordinate float64
 	Y_cordinate float64
 	MetaUsersId string

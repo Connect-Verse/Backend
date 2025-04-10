@@ -1,7 +1,7 @@
 package user
 
 import (
-	
+	"fmt"
 
 	"github.com/connect-verse/internal/models"
 	"gorm.io/gorm"
@@ -27,14 +27,15 @@ func (u *UserImplementation) FindAll() (users []models.User,err error){
 }
 
 
-func (u *UserImplementation) Create(user models.User) (err error){
+func (u *UserImplementation) Create(user models.User) ( models.User,error){
 	
     result:= u.db.Create(&user)
 	if result.Error != nil{
-		return  result.Error
+		fmt.Print(result.Error)
+		return  models.User{},result.Error
 	}        
 
-	return  nil
+	return  user,nil
 }
 
 
@@ -50,7 +51,8 @@ func (u *UserImplementation) FindbyId(userId string) (users models.User,err erro
 
 func (u *UserImplementation) FindbyEmail(userEmail string) (users models.User,err error){
     var user models.User
-	result:= u.db.Find(&user).Where("email=?",userEmail)
+	fmt.Print(userEmail,"email is ")
+	result:= u.db.Preload("CreatedRooms.MetaUsers").Preload("CreatedRooms.CreatedUser").Preload("JoinedRooms.MetaUsers").Where("email=?",userEmail).Find(&user)
 	if result.Error != nil{
 		return models.User{}, result.Error
 	}        

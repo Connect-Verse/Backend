@@ -29,7 +29,7 @@ func (m *MetaRepoImpl) CreateMeta(metaUser models.MetaUsers) (models.MetaUsers,e
 
 func (m *MetaRepoImpl) FindById(metaUserId string) (models.MetaUsers,error){
 	var metaUser models.MetaUsers
-	result := m.db.Preload("Room").Preload("UserAvatar").Preload("Position").Where("id = ?",metaUserId).Find(&metaUser)
+	result := m.db.Preload("Room").Preload("UserAvatar").Preload("Position").Preload("Avatars").Where("id = ?",metaUserId).Find(&metaUser)
     log.Printf(metaUser.Id,metaUserId)
 	if result.Error!=nil {
 	  return models.MetaUsers{},result.Error

@@ -31,10 +31,13 @@ func (c *Controller) CreateAvatar(ctx *gin.Context ) {
 }
 
 func (c *Controller) DeleteAvatar(ctx *gin.Context ) {
-	req:=request.AvatarRequest{}  
+	type avatarId struct{
+		Id string `json:"id"`
+	}
+	req:=avatarId{}  
 	ctx.ShouldBindJSON(&req)
     
-	result,err:= c.avatarService.CreateAvatar(req)
+	result,err:= c.avatarService.DeleteAvatar(req.Id)
 
 	if err!=nil {
 		 ctx.JSON(http.StatusForbidden,response.ErrorResponse{
@@ -102,10 +105,8 @@ func (c *Controller) FindAvatar(ctx *gin.Context ) {
 
 
 func (c *Controller) FindAllAvatar(ctx *gin.Context ) {
-	req:=request.AvatarRequest{}  
-	ctx.ShouldBindJSON(&req)
-    
-	result,err:= c.avatarService.CreateAvatar(req)
+
+	result,err:= c.avatarService.FindAllAvatars()
 
 	if err!=nil {
 		 ctx.JSON(http.StatusForbidden,response.ErrorResponse{
@@ -115,11 +116,6 @@ func (c *Controller) FindAllAvatar(ctx *gin.Context ) {
 		})
 	}
 
-	ctx.JSON(http.StatusOK,response.AvatarResponse{
-		Id: result.Id,
-		Name: result.Name,
-        Image: result.Image,
-    	 ExistedFrom: result.ExistedFrom, 
-	})
+	ctx.JSON(http.StatusOK,result)
 
 }
