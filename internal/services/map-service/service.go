@@ -2,6 +2,7 @@ package mapservice
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/connect-verse/internal/data/request"
 	"github.com/connect-verse/internal/data/response"
@@ -100,6 +101,7 @@ func NewMapServiceImpl(mapService maps.MapsRepository, validate *validator.Valid
 		 }
 		mapps= append(mapps,mapp)
 	 }
+	 fmt.Print(mapps)
 	 return mapps,nil
   }
 

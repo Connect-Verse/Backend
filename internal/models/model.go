@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
+
+
 type User struct{
 	Id             string   	`gorm:"unique;primaryKey"`
 	Name      	   *sql.NullString	
@@ -14,7 +16,7 @@ type User struct{
 	Password   	   string
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
-	CreatedRooms   []Rooms      `gorm:"foreignKey:CreatedBy"`
+	CreatedRooms   []Rooms      `gorm:"foreignKey:CreatedBy; constraint:OnDelete:CASCADE;"`
 	JoinedRooms    []Rooms      `gorm:"many2many:user_joined_room;"`
 }
 
@@ -39,7 +41,7 @@ type Maps struct{
 	Tiles	        string
 	Info		    string
 	ExistedFrom    	time.Time
-	Rooms          	[]Rooms   `gorm:"foreignKey:map_id"`  
+	Rooms          	[]Rooms   `gorm:"foreignKey:map_id; constraint:OnDelete:CASCADE;"`  
 }
 
 type Avatars struct{
@@ -47,18 +49,18 @@ type Avatars struct{
 	Name           string
 	Image          string
 	ExistedFrom    time.Time
-	MetaUsers      []MetaUsers `gorm:"foreignKey:UserAvatarId"`
+	MetaUsers      []MetaUsers `gorm:"foreignKey:UserAvatarId; constraint:OnDelete:CASCADE;"`
 }
 
 type Rooms struct{
 	Id           string      `gorm:"unique;primaryKey"`
 	Name         string
 	CreatedBy    string
-	CreatedUser  User        `gorm:"references:Id; foreignKey:CreatedBy"`
+	CreatedUser  User        `gorm:"references:Id; foreignKey:CreatedBy;"`
 	MapId        string
-	Map          Maps        `gorm:"references:Id; foreignKey:MapId"`
+	Map          Maps        `gorm:"references:Id; foreignKey:MapId;"`
 	UsersJoined  []User      `gorm:"many2many:user_joined_room;"`
-	MetaUsers    []MetaUsers `gorm:"foreignKey:room_id"`
+	MetaUsers    []MetaUsers `gorm:"foreignKey:RoomId; constraint:OnDelete:CASCADE;"`
 
 }
 
@@ -70,7 +72,7 @@ type MetaUsers struct  {
 	UserId		 string   
 	RoomId       string 
 	Room         Rooms          `gorm:"references:Id; foreignKey:RoomId"`    
-	Position     PlayerPosition `gorm:"foreignKey:meta_users_id"`
+	Position     PlayerPosition `gorm:"foreignKey:meta_users_id;constraint:OnDelete:CASCADE;"`
 }
 
 type PlayerPosition struct{

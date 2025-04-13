@@ -102,10 +102,8 @@ func (c *Controller) FindMap(ctx *gin.Context) {
 }
 
 func (c *Controller) FindAllMap(ctx *gin.Context) {
-	req := request.MapRequest{}
-	ctx.ShouldBindJSON(&req)
-
-	result, err := c.mapService.CreateMap(req)
+	
+	result, err := c.mapService.FindALlMaps()
 
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, response.ErrorResponse{
@@ -115,11 +113,6 @@ func (c *Controller) FindAllMap(ctx *gin.Context) {
 		})
 	}
 
-	ctx.JSON(http.StatusOK, response.MapResponse{
-		Id:    result.Id,
-		Tiles: result.Tiles,
-		Info:  result.Info,
-		Image: result.Info,
-	})
+	ctx.JSON(http.StatusOK, result)
 
 }
