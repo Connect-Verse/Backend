@@ -33,10 +33,14 @@ func (c *Controller) CreateMap(ctx *gin.Context) {
 }
 
 func (c *Controller) DeleteMap(ctx *gin.Context) {
-	req := request.MapRequest{}
+	type reqId struct {
+		Id string `json:"id"`
+	}
+	req := reqId{}
+
 	ctx.ShouldBindJSON(&req)
 
-	result, err := c.mapService.CreateMap(req)
+	result, err := c.mapService.DeleteMap(req.Id)
 
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, response.ErrorResponse{

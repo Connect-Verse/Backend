@@ -83,7 +83,7 @@ func (r *RoomsImplementation) AllRoom()  ( []models.Rooms,  error){
 func (r *RoomsImplementation) FindById(roomId string) (models.Rooms, error){
 	var room models.Rooms
     fmt.Print(roomId)
-	result := r.db.Preload("Map").Preload("MetaUsers").Where("id = ? ", roomId).Find(&room)
+	result := r.db.Preload("Map").Preload("MetaUsers.UserAvatar").Where("id = ? ", roomId).Find(&room)
 
 	if result.Error!=nil {
 		return room,result.Error

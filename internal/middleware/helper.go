@@ -15,7 +15,7 @@ func Middleware(ctx *gin.Context){
 
 	if err!=nil{
 		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "cookies is not found try signing in again", Err: err.Error()})
-	    return
+	    ctx.Abort()
 	}
 
 	data,err:= utils.VerifyToken(cookie)
@@ -23,7 +23,8 @@ func Middleware(ctx *gin.Context){
 	if err!=nil{
 
 		ctx.JSON(http.StatusForbidden, response.ErrorResponse{Code: 400, Message: "unable to parse the provided cookies", Err: err.Error()})
-		return
+		ctx.Abort()
+
 	}
 	fmt.Print(data,"eror  occured")
 
