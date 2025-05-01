@@ -2,9 +2,13 @@ package main
 
 import (
 	"log"
+	"net"
 	"net/http"
 	"time"
+
 	"github.com/connect-verse/internal/api"
+	pb "github.com/connect-verse/internal/grpc"
+	"github.com/connect-verse/internal/grpc/server"
 	"github.com/connect-verse/internal/middleware"
 	"github.com/connect-verse/internal/models"
 	"github.com/connect-verse/internal/repository/avatars"
@@ -22,6 +26,7 @@ import (
 	"github.com/connect-verse/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"google.golang.org/grpc"
 )
 
 func main(){
@@ -71,6 +76,26 @@ func main(){
 	   err = server.ListenAndServe()
 	   utils.PanicError(err)
  
+	//grpc server starting
+
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	grpcServer := grpc.NewServer()
+	pb.RegisterRemoteServerServer(grpcServer, newServer())
+
+	// Start server
+	log.Println("Server listening on port :50051...")
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
+}
+
+func newServer() *server.Remoteserver{
+  s:=&server.Remoteserver{}
+  return s
 }
 
 func userRouter(controller *handlers.Controller) *gin.Engine {

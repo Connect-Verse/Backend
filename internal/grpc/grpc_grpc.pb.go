@@ -19,101 +19,139 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Greeter_SayHello_FullMethodName = "/grpc.Greeter/SayHello"
+	RemoteServer_SetPositions_FullMethodName   = "/grpc.RemoteServer/SetPositions"
+	RemoteServer_CheckPositions_FullMethodName = "/grpc.RemoteServer/CheckPositions"
 )
 
-// GreeterClient is the client API for Greeter service.
+// RemoteServerClient is the client API for RemoteServer service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GreeterClient interface {
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+type RemoteServerClient interface {
+	SetPositions(ctx context.Context, in *PlayerPosition, opts ...grpc.CallOption) (*QueryReply, error)
+	CheckPositions(ctx context.Context, in *MetaId, opts ...grpc.CallOption) (*PositionResponse, error)
 }
 
-type greeterClient struct {
+type remoteServerClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
-	return &greeterClient{cc}
+func NewRemoteServerClient(cc grpc.ClientConnInterface) RemoteServerClient {
+	return &remoteServerClient{cc}
 }
 
-func (c *greeterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+func (c *remoteServerClient) SetPositions(ctx context.Context, in *PlayerPosition, opts ...grpc.CallOption) (*QueryReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, Greeter_SayHello_FullMethodName, in, out, cOpts...)
+	out := new(QueryReply)
+	err := c.cc.Invoke(ctx, RemoteServer_SetPositions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GreeterServer is the server API for Greeter service.
-// All implementations must embed UnimplementedGreeterServer
-// for forward compatibility.
-type GreeterServer interface {
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
-	mustEmbedUnimplementedGreeterServer()
+func (c *remoteServerClient) CheckPositions(ctx context.Context, in *MetaId, opts ...grpc.CallOption) (*PositionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PositionResponse)
+	err := c.cc.Invoke(ctx, RemoteServer_CheckPositions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-// UnimplementedGreeterServer must be embedded to have
+// RemoteServerServer is the server API for RemoteServer service.
+// All implementations must embed UnimplementedRemoteServerServer
+// for forward compatibility.
+type RemoteServerServer interface {
+	SetPositions(context.Context, *PlayerPosition) (*QueryReply, error)
+	CheckPositions(context.Context, *MetaId) (*PositionResponse, error)
+	mustEmbedUnimplementedRemoteServerServer()
+}
+
+// UnimplementedRemoteServerServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedGreeterServer struct{}
+type UnimplementedRemoteServerServer struct{}
 
-func (UnimplementedGreeterServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
+func (UnimplementedRemoteServerServer) SetPositions(context.Context, *PlayerPosition) (*QueryReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetPositions not implemented")
 }
-func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
-func (UnimplementedGreeterServer) testEmbeddedByValue()                 {}
+func (UnimplementedRemoteServerServer) CheckPositions(context.Context, *MetaId) (*PositionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckPositions not implemented")
+}
+func (UnimplementedRemoteServerServer) mustEmbedUnimplementedRemoteServerServer() {}
+func (UnimplementedRemoteServerServer) testEmbeddedByValue()                      {}
 
-// UnsafeGreeterServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GreeterServer will
+// UnsafeRemoteServerServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RemoteServerServer will
 // result in compilation errors.
-type UnsafeGreeterServer interface {
-	mustEmbedUnimplementedGreeterServer()
+type UnsafeRemoteServerServer interface {
+	mustEmbedUnimplementedRemoteServerServer()
 }
 
-func RegisterGreeterServer(s grpc.ServiceRegistrar, srv GreeterServer) {
-	// If the following call pancis, it indicates UnimplementedGreeterServer was
+func RegisterRemoteServerServer(s grpc.ServiceRegistrar, srv RemoteServerServer) {
+	// If the following call pancis, it indicates UnimplementedRemoteServerServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Greeter_ServiceDesc, srv)
+	s.RegisterService(&RemoteServer_ServiceDesc, srv)
 }
 
-func _Greeter_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
+func _RemoteServer_SetPositions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PlayerPosition)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).SayHello(ctx, in)
+		return srv.(RemoteServerServer).SetPositions(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Greeter_SayHello_FullMethodName,
+		FullMethod: RemoteServer_SetPositions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).SayHello(ctx, req.(*HelloRequest))
+		return srv.(RemoteServerServer).SetPositions(ctx, req.(*PlayerPosition))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Greeter_ServiceDesc is the grpc.ServiceDesc for Greeter service.
+func _RemoteServer_CheckPositions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MetaId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RemoteServerServer).CheckPositions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RemoteServer_CheckPositions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RemoteServerServer).CheckPositions(ctx, req.(*MetaId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// RemoteServer_ServiceDesc is the grpc.ServiceDesc for RemoteServer service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Greeter_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "grpc.Greeter",
-	HandlerType: (*GreeterServer)(nil),
+var RemoteServer_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc.RemoteServer",
+	HandlerType: (*RemoteServerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SayHello",
-			Handler:    _Greeter_SayHello_Handler,
+			MethodName: "SetPositions",
+			Handler:    _RemoteServer_SetPositions_Handler,
+		},
+		{
+			MethodName: "CheckPositions",
+			Handler:    _RemoteServer_CheckPositions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

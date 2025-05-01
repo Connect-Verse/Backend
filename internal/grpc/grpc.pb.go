@@ -21,27 +21,30 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type HelloRequest struct {
+type PlayerPosition struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	MetaId        string                 `protobuf:"bytes,1,opt,name=metaId,proto3" json:"metaId,omitempty"`
+	RoomId        string                 `protobuf:"bytes,2,opt,name=roomId,proto3" json:"roomId,omitempty"`
+	XPosition     string                 `protobuf:"bytes,3,opt,name=XPosition,proto3" json:"XPosition,omitempty"`
+	YPosition     string                 `protobuf:"bytes,4,opt,name=YPosition,proto3" json:"YPosition,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *HelloRequest) Reset() {
-	*x = HelloRequest{}
+func (x *PlayerPosition) Reset() {
+	*x = PlayerPosition{}
 	mi := &file_grpc_grpc_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *HelloRequest) String() string {
+func (x *PlayerPosition) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*HelloRequest) ProtoMessage() {}
+func (*PlayerPosition) ProtoMessage() {}
 
-func (x *HelloRequest) ProtoReflect() protoreflect.Message {
+func (x *PlayerPosition) ProtoReflect() protoreflect.Message {
 	mi := &file_grpc_grpc_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -53,39 +56,61 @@ func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use HelloRequest.ProtoReflect.Descriptor instead.
-func (*HelloRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use PlayerPosition.ProtoReflect.Descriptor instead.
+func (*PlayerPosition) Descriptor() ([]byte, []int) {
 	return file_grpc_grpc_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *HelloRequest) GetName() string {
+func (x *PlayerPosition) GetMetaId() string {
 	if x != nil {
-		return x.Name
+		return x.MetaId
 	}
 	return ""
 }
 
-type HelloReply struct {
+func (x *PlayerPosition) GetRoomId() string {
+	if x != nil {
+		return x.RoomId
+	}
+	return ""
+}
+
+func (x *PlayerPosition) GetXPosition() string {
+	if x != nil {
+		return x.XPosition
+	}
+	return ""
+}
+
+func (x *PlayerPosition) GetYPosition() string {
+	if x != nil {
+		return x.YPosition
+	}
+	return ""
+}
+
+type QueryReply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Respose       string                 `protobuf:"bytes,2,opt,name=respose,proto3" json:"respose,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *HelloReply) Reset() {
-	*x = HelloReply{}
+func (x *QueryReply) Reset() {
+	*x = QueryReply{}
 	mi := &file_grpc_grpc_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *HelloReply) String() string {
+func (x *QueryReply) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*HelloReply) ProtoMessage() {}
+func (*QueryReply) ProtoMessage() {}
 
-func (x *HelloReply) ProtoReflect() protoreflect.Message {
+func (x *QueryReply) ProtoReflect() protoreflect.Message {
 	mi := &file_grpc_grpc_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -97,14 +122,149 @@ func (x *HelloReply) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use HelloReply.ProtoReflect.Descriptor instead.
-func (*HelloReply) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryReply.ProtoReflect.Descriptor instead.
+func (*QueryReply) Descriptor() ([]byte, []int) {
 	return file_grpc_grpc_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *HelloReply) GetMessage() string {
+func (x *QueryReply) GetStatus() int32 {
 	if x != nil {
-		return x.Message
+		return x.Status
+	}
+	return 0
+}
+
+func (x *QueryReply) GetRespose() string {
+	if x != nil {
+		return x.Respose
+	}
+	return ""
+}
+
+type PositionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MetaId        string                 `protobuf:"bytes,1,opt,name=metaId,proto3" json:"metaId,omitempty"`
+	RoomId        string                 `protobuf:"bytes,2,opt,name=roomId,proto3" json:"roomId,omitempty"`
+	XPosition     string                 `protobuf:"bytes,3,opt,name=XPosition,proto3" json:"XPosition,omitempty"`
+	YPosition     string                 `protobuf:"bytes,4,opt,name=YPosition,proto3" json:"YPosition,omitempty"`
+	Status        int32                  `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
+	Response      string                 `protobuf:"bytes,6,opt,name=response,proto3" json:"response,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PositionResponse) Reset() {
+	*x = PositionResponse{}
+	mi := &file_grpc_grpc_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PositionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PositionResponse) ProtoMessage() {}
+
+func (x *PositionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_grpc_grpc_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PositionResponse.ProtoReflect.Descriptor instead.
+func (*PositionResponse) Descriptor() ([]byte, []int) {
+	return file_grpc_grpc_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *PositionResponse) GetMetaId() string {
+	if x != nil {
+		return x.MetaId
+	}
+	return ""
+}
+
+func (x *PositionResponse) GetRoomId() string {
+	if x != nil {
+		return x.RoomId
+	}
+	return ""
+}
+
+func (x *PositionResponse) GetXPosition() string {
+	if x != nil {
+		return x.XPosition
+	}
+	return ""
+}
+
+func (x *PositionResponse) GetYPosition() string {
+	if x != nil {
+		return x.YPosition
+	}
+	return ""
+}
+
+func (x *PositionResponse) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *PositionResponse) GetResponse() string {
+	if x != nil {
+		return x.Response
+	}
+	return ""
+}
+
+type MetaId struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MetaId) Reset() {
+	*x = MetaId{}
+	mi := &file_grpc_grpc_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MetaId) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MetaId) ProtoMessage() {}
+
+func (x *MetaId) ProtoReflect() protoreflect.Message {
+	mi := &file_grpc_grpc_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MetaId.ProtoReflect.Descriptor instead.
+func (*MetaId) Descriptor() ([]byte, []int) {
+	return file_grpc_grpc_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *MetaId) GetId() string {
+	if x != nil {
+		return x.Id
 	}
 	return ""
 }
@@ -113,14 +273,28 @@ var File_grpc_grpc_proto protoreflect.FileDescriptor
 
 const file_grpc_grpc_proto_rawDesc = "" +
 	"\n" +
-	"\x0fgrpc/grpc.proto\x12\x04grpc\"\"\n" +
-	"\fHelloRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"&\n" +
+	"\x0fgrpc/grpc.proto\x12\x04grpc\"|\n" +
+	"\x0ePlayerPosition\x12\x16\n" +
+	"\x06metaId\x18\x01 \x01(\tR\x06metaId\x12\x16\n" +
+	"\x06roomId\x18\x02 \x01(\tR\x06roomId\x12\x1c\n" +
+	"\tXPosition\x18\x03 \x01(\tR\tXPosition\x12\x1c\n" +
+	"\tYPosition\x18\x04 \x01(\tR\tYPosition\">\n" +
 	"\n" +
-	"HelloReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2;\n" +
-	"\aGreeter\x120\n" +
-	"\bSayHello\x12\x12.grpc.HelloRequest\x1a\x10.grpc.HelloReplyB(Z&github.com/connect-verse/internal/grpcb\x06proto3"
+	"QueryReply\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x18\n" +
+	"\arespose\x18\x02 \x01(\tR\arespose\"\xb2\x01\n" +
+	"\x10PositionResponse\x12\x16\n" +
+	"\x06metaId\x18\x01 \x01(\tR\x06metaId\x12\x16\n" +
+	"\x06roomId\x18\x02 \x01(\tR\x06roomId\x12\x1c\n" +
+	"\tXPosition\x18\x03 \x01(\tR\tXPosition\x12\x1c\n" +
+	"\tYPosition\x18\x04 \x01(\tR\tYPosition\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\x05R\x06status\x12\x1a\n" +
+	"\bresponse\x18\x06 \x01(\tR\bresponse\"\x18\n" +
+	"\x06metaId\x12\x0e\n" +
+	"\x02Id\x18\x01 \x01(\tR\x02Id2~\n" +
+	"\fRemoteServer\x126\n" +
+	"\fSetPositions\x12\x14.grpc.PlayerPosition\x1a\x10.grpc.QueryReply\x126\n" +
+	"\x0eCheckPositions\x12\f.grpc.metaId\x1a\x16.grpc.PositionResponseB(Z&github.com/connect-verse/internal/grpcb\x06proto3"
 
 var (
 	file_grpc_grpc_proto_rawDescOnce sync.Once
@@ -134,16 +308,20 @@ func file_grpc_grpc_proto_rawDescGZIP() []byte {
 	return file_grpc_grpc_proto_rawDescData
 }
 
-var file_grpc_grpc_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_grpc_grpc_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_grpc_grpc_proto_goTypes = []any{
-	(*HelloRequest)(nil), // 0: grpc.HelloRequest
-	(*HelloReply)(nil),   // 1: grpc.HelloReply
+	(*PlayerPosition)(nil),   // 0: grpc.PlayerPosition
+	(*QueryReply)(nil),       // 1: grpc.QueryReply
+	(*PositionResponse)(nil), // 2: grpc.PositionResponse
+	(*MetaId)(nil),           // 3: grpc.metaId
 }
 var file_grpc_grpc_proto_depIdxs = []int32{
-	0, // 0: grpc.Greeter.SayHello:input_type -> grpc.HelloRequest
-	1, // 1: grpc.Greeter.SayHello:output_type -> grpc.HelloReply
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	0, // 0: grpc.RemoteServer.SetPositions:input_type -> grpc.PlayerPosition
+	3, // 1: grpc.RemoteServer.CheckPositions:input_type -> grpc.metaId
+	1, // 2: grpc.RemoteServer.SetPositions:output_type -> grpc.QueryReply
+	2, // 3: grpc.RemoteServer.CheckPositions:output_type -> grpc.PositionResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -160,7 +338,7 @@ func file_grpc_grpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_grpc_grpc_proto_rawDesc), len(file_grpc_grpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
