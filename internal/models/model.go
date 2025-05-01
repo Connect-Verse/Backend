@@ -77,8 +77,8 @@ type MetaUsers struct  {
 
 type PlayerPosition struct{
 	Id          string       `gorm:"unique;primaryKey"`
-	X_cordinate float64
-	Y_cordinate float64
+	X_cordinate string
+	Y_cordinate string
 	MetaUsersId string
 
 }
