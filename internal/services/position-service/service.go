@@ -13,7 +13,7 @@ type PositionServiceImpl struct{
 	Validate   *validator.Validate
 }
 
-func NewPosServiceImpl (validate *validator.Validate, pos position.PositionRepository) (*PositionServiceImpl,error){
+func NewPosServiceImpl (pos position.PositionRepository,validate *validator.Validate) (*PositionServiceImpl,error){
     if validate!=nil {
 		return &PositionServiceImpl{
 		   Validate: validate,
