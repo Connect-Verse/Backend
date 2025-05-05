@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	pb "github.com/connect-verse/internal/grpc"
@@ -17,11 +18,13 @@ type Remoteserver struct {
 }
 
 func (s *Remoteserver) SetPositions(ctx context.Context, position *pb.PlayerPosition) (*pb.QueryReply, error){
-    positionModel:= models.PlayerPosition{
+	positionModel:= models.PlayerPosition{
 		MetaUsersId: position.MetaId,
 		X_cordinate: position.XPosition,
 		Y_cordinate: position.YPosition,
 	}
+	fmt.Print(positionModel)
+
 	_,err:= s.PoService.SetPosition(positionModel)
 	if err!=nil {
 		return &pb.QueryReply{

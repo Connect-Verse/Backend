@@ -2,6 +2,8 @@ package positionservice
 
 import (
 	"errors"
+	"fmt"
+
 	"github.com/connect-verse/internal/models"
 	"github.com/connect-verse/internal/repository/position"
 	"github.com/go-playground/validator/v10"
@@ -25,14 +27,15 @@ func NewPosServiceImpl (pos position.PositionRepository,validate *validator.Vali
 
 func (p *PositionServiceImpl) SetPosition(position models.PlayerPosition) (models.PlayerPosition,error){
    
-	err:= p.Validate.Struct(position)
+	// err:= p.Validate.Struct(position)
     
-	if err!=nil {
-		return models.PlayerPosition{},err
-	}
+	// if err!=nil {
+	// 	return models.PlayerPosition{},err
+	// }
 
    result,err:= p.Pos.SetPosition(position)
    if err!=nil {
+	fmt.Print("this error",err)
       return result,err
    }
    return result,nil

@@ -1,8 +1,11 @@
 package position
 
 import (
+	"fmt"
+
 	"github.com/connect-verse/internal/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type PositionRepoImpl struct{
@@ -14,10 +17,12 @@ func NewPosRepoImpl(db *gorm.DB) *PositionRepoImpl{
 }
 
 func (p *PositionRepoImpl) SetPosition(position models.PlayerPosition) (models.PlayerPosition, error){
-   err:= p.db.Create(position)
-   if err!=nil{
-	return models.PlayerPosition{},err.Error
-   }
+   fmt.Print(position,"pehlea ")
+   result:= p.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&position)
+
+   if result.Error!=nil {
+		return models.PlayerPosition{},result.Error
+	}
    return position,nil
 }
 

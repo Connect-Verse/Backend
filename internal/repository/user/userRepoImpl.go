@@ -52,7 +52,7 @@ func (u *UserImplementation) FindbyId(userId string) (users models.User,err erro
 func (u *UserImplementation) FindbyEmail(userEmail string) (users models.User,err error){
     var user models.User
 	fmt.Print(userEmail,"email is ")
-	result:= u.db.Preload("CreatedRooms.MetaUsers").Preload("CreatedRooms.CreatedUser").Preload("JoinedRooms.MetaUsers").Where("email=?",userEmail).Find(&user)
+	result:= u.db.Preload("JoinedRooms").Where("email=?",userEmail).Find(&user)
 	if result.Error != nil{
 		return models.User{}, result.Error
 	}        

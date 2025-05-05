@@ -40,7 +40,7 @@ func main(){
 	 if db==nil{
 		log.Fatal("error occured while initialising the database")
 	 }
-
+	// db.Migrator().DropTable(&models.PlayerPosition{})
 	 db.AutoMigrate(&models.User{}, &models.VerificationToken{}, &models.Avatars{}, &models.Maps{},&models.Rooms{},&models.MetaUsers{},&models.PlayerPosition{})
 
 
@@ -71,19 +71,25 @@ func main(){
 
 
 	//grpc server starting
-	lis, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
+	go func(){
 
-	grpcServer := grpc.NewServer()
-	pb.RegisterRemoteServerServer(grpcServer, newServer(positionService))
+		lis, err := net.Listen("tcp", ":50051")
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
 
-	// Start server
-	fmt.Print("Server listening on port :50051...")
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+		var opts []grpc.ServerOption
+
+		grpcServer := grpc.NewServer(opts...)
+		pb.RegisterRemoteServerServer(grpcServer, newServer(positionService))
+
+		// Start server
+		fmt.Print("Server listening on port :50051...")
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+
+	}()
 
 	server := &http.Server{
 		Addr:           ":8888",
@@ -96,7 +102,6 @@ func main(){
 	   err = server.ListenAndServe()
 	   utils.PanicError(err)
  
-	
 
 }
 
